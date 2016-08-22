@@ -1,5 +1,5 @@
 set(is_required REQUIRED)
-if( MSVC AND NOT WITH_PREBUILD_MSVC_DEPENDENCIES )
+if( MSVC )
 	set(is_required)
 endif()
 find_package(HDF5 COMPONENTS C HL ${is_required})
@@ -15,17 +15,17 @@ macro (config_hdf5_filter filter_name header)
 	find_file(${FILTER_VAR}_DEBUG_LIBRARY NAMES "${filter_name}_D.lib" "lib${filter_name}_D.lib" HINTS ${${FILTER_VAR}_DIR}/lib)
 	find_file(${FILTER_VAR}_RELEASE_LIBRARY NAMES "${filter_name}.lib" "lib${filter_name}.lib" HINTS ${${FILTER_VAR}_DIR}/lib)
 	if(EXISTS ${${FILTER_VAR}_DEBUG_LIBRARY} AND EXISTS ${${FILTER_VAR}_RELEASE_LIBRARY})
-		list(APPEND Caffe_LINKER_LIBS 
+		list(APPEND Caffe_LINKER_LIBS
 			debug ${${FILTER_VAR}_DEBUG_LIBRARY}
 			optimized ${${FILTER_VAR}_RELEASE_LIBRARY}
 			)
 	endif()
 endmacro()
 
-if( MSVC AND NOT WITH_PREBUILD_MSVC_DEPENDENCIES )
+if( MSVC )
 	# The default FindHDF5.cmake from CMake use h5cc to locate the files,
 	# but h5cc is a .sh and thus not supported by windows environments.
-	# In such a case look for the customized file instead. 
+	# In such a case look for the customized file instead.
 	set(CMAKE_MODULE_PATH "${HDF5_DIR};${CMAKE_MODULE_PATH}")
 
 	find_package(HDF5 REQUIRED)
