@@ -34,7 +34,7 @@ cmake -G"%CMAKE_GENERATOR%" ^
 cmake --build . --config %CMAKE_CONFIG%
 
 :: Build and exectute the tests
-if %CMAKE_BUILD_SHARED_LIBS% EQUAL OFF (
+if "%CMAKE_BUILD_SHARED_LIBS%"=="OFF" (
   :: Run the tests only for static lib as the shared lib is causing an issue.
   cmake --build . --target runtest
 )

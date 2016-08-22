@@ -9,6 +9,9 @@ This branch of Caffe ports the framework to Windows.
 [![Build status](https://ci.appveyor.com/api/projects/status/128eg95svel2a2xs?svg=true)]
 (https://ci.appveyor.com/project/pavlejosipovic/caffe-v45qi) AppVeyor (Windows build)
 
+[![Windows CMake Build status](https://ci.appveyor.com/api/projects/status/lc0pdvlv89a9i9ae?svg=true)](https://ci.appveyor.com/project/willyd/caffe) AppVeyor (Windows CMake build)
+
+
 ## Windows Setup (with CMake)
 **Requirements**:
  - Visual Studio 2013
@@ -58,6 +61,7 @@ Configure using CMake:
 > ninja
 > ninja install
 ```
+It is also possible to use the `Visual Studio 12 2013 Win64` generator instead of the `Ninja generator`. Please note however that Visual Studio will not parallelize the build of the CUDA files which results in much longer build times.
 
 ### Building a shared library
 
