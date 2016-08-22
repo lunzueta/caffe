@@ -25,12 +25,6 @@ else()
     set(WITH_PREBUILD_MSVC_DEPENDENCIES OFF)
 endif()
 
-#include(cmake/WindowsUtils.cmake)
-#windows_resolve_dependencies()
-
-macro(target_copy_dependencies)
-endmacro()
-
 # ---[ Using cmake scripts and modules
 list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake/Modules)
 
