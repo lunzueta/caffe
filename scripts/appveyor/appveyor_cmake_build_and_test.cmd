@@ -7,13 +7,15 @@ python --version
 :: Add the required channels
 conda config --add channels conda-forge
 conda config --add channels willyd
+:: Update conda
+conda update conda -y
 :: Create an environment
 conda create -n caffe --yes caffe-dependencies cmake ninja
 :: Activate the environement
-activate caffe
+call activate caffe
 
 :: Call this script to set the right cmake variables
-set_cmake_vars
+call set_cmake_vars
 
 :: Create build directory and configure cmake
 mkdir build
