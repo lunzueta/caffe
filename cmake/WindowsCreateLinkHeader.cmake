@@ -1,14 +1,14 @@
 set(_windows_create_link_header "${CMAKE_CURRENT_LIST_FILE}")
 
 # function to add a post build command to create a link header
-function(windows_create_link_header target outputfile)       
+function(windows_create_link_header target outputfile)
     add_custom_command(TARGET ${target} POST_BUILD
-                       COMMAND ${CMAKE_COMMAND}                                    
+                       COMMAND ${CMAKE_COMMAND}
                                 -DMSVC_VERSION=${MSVC_VERSION}
                                 -DTARGET_FILE=$<TARGET_FILE:${target}>
                                 -DPROJECT_BINARY_DIR=${PROJECT_BINARY_DIR}
                                 -DCMAKE_CURRENT_BINARY_DIR=${CMAKE_CURRENT_BINARY_DIR}
-                                -DCONFIGURATION=$<CONFIGURATION>                                
+                                -DCONFIGURATION=$<CONFIGURATION>
                                 -DOUTPUT_FILE=${outputfile}
                                 -P ${_windows_create_link_header}
                         BYPRODUCTS ${outputfile}
@@ -46,13 +46,13 @@ function(find_dumpbin var)
 endfunction()
 
 macro(print_date)
-    execute_process(COMMAND powershell -NoProfile -Command "get-date")    
+    execute_process(COMMAND powershell -NoProfile -Command "get-date")
 endmacro()
 
 
 if(CMAKE_SCRIPT_MODE_FILE)
     cmake_policy(SET CMP0007 NEW)
-    # find the dumpbin exe   
+    # find the dumpbin exe
     find_dumpbin(dumpbin)
     # execute dumpbin to generate a list of symbols
     execute_process(COMMAND ${dumpbin} /ARCHIVEMEMBERS ${TARGET_FILE}
@@ -71,7 +71,7 @@ if(CMAKE_SCRIPT_MODE_FILE)
             list(APPEND _object_files ${_object_native_filepath})
         endif()
     endforeach()
-    
+
     # convert list to EOL separated string
     string(REPLACE ";" "\n" _object_files "${_object_files}")
     set(_object_list_file ${CMAKE_CURRENT_BINARY_DIR}/${CONFIGURATION}/object_list.txt)
@@ -82,13 +82,17 @@ if(CMAKE_SCRIPT_MODE_FILE)
                     RESULT_VARIABLE _result
                     OUTPUT_VARIABLE _output
                     ERROR_VARIABLE _error
-    )        
+                    WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
+    )
+    if(NOT ${_result} EQUAL 0)
+      message(FATAL_ERROR "Failed to create_def using cmake -E __create_def.\nResult code: ${_result}\nError: ${_error}\nOutput: ${_output}")
+    endif()
     # convert the .def to a list of pragmas
     file(READ ${_symbol_list_file} _symbols)
     # remove the exports keyword and data specifier
     string(REPLACE "EXPORTS \n" "" _symbols ${_symbols})
     string(REPLACE " \t DATA" "" _symbols ${_symbols})
-    # remove all the leading tabs and add the required pragma    
+    # remove all the leading tabs and add the required pragma
     string(REGEX REPLACE "\t([^ \n]*)" "#pragma comment(linker, \"/include:\\1\")" CAFFE_INCLUDE_SYMBOLS ${_symbols})
     # configure the header file template
     file(WRITE ${OUTPUT_FILE} ${CAFFE_INCLUDE_SYMBOLS})
