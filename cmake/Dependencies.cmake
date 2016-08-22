@@ -4,7 +4,16 @@ set(Caffe_LINKER_LIBS "")
 # ---[ Boost
 find_package(Boost 1.46 REQUIRED COMPONENTS system thread filesystem)
 include_directories(SYSTEM ${Boost_INCLUDE_DIR})
-list(APPEND Caffe_LINKER_LIBS ${Boost_LIBRARIES})
+add_definitions(
+    -DBOOST_ALL_NO_LIB
+    )
+list(APPEND Caffe_LINKER_LIBS ${Boost_LIBRARIES})    
+
+if(DEFINED MSVC)
+    add_definitions(
+        -DBOOST_NO_CXX11_TEMPLATE_ALIASES
+        )
+endif()
 
 # ---[ Threads
 find_package(Threads REQUIRED)
@@ -24,7 +33,7 @@ list(APPEND Caffe_LINKER_LIBS ${GFLAGS_LIBRARIES})
 include(cmake/ProtoBuf.cmake)
 
 # ---[ HDF5
-find_package(HDF5 COMPONENTS HL REQUIRED)
+include("cmake/External/hdf5.cmake")
 include_directories(SYSTEM ${HDF5_INCLUDE_DIRS} ${HDF5_HL_INCLUDE_DIR})
 list(APPEND Caffe_LINKER_LIBS ${HDF5_LIBRARIES})
 
