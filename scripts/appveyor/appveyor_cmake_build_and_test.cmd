@@ -22,19 +22,22 @@ mkdir build
 pushd build
 :: Setup the environement for VS 2013 x64
 call "%VS120COMNTOOLS%..\..\VC\vcvarsall.bat" amd64
-cmake -GNinja ^
+cmake -G"%CMAKE_GENERATOR%" ^
       -DBLAS=Open ^
-      -DCMAKE_BUILD_TYPE=Release ^
-      -DBUILD_SHARED_LIBS=OFF ^
+      -DCMAKE_BUILD_TYPE=%CMAKE_CONFIG% ^
+      -DBUILD_SHARED_LIBS=%CMAKE_BUILD_SHARED_LIBS% ^
       -DCMAKE_MODULE_PATH=%CMAKE_MODULE_PATH% ^
       -DCMAKE_PREFIX_PATH=%CMAKE_PREFIX_PATH% ^
       ..\
 
 :: Build the library and tools
-cmake --build .
+cmake --build . --config %CMAKE_CONFIG%
 
 :: Build and exectute the tests
-cmake --build . --target runtest
+if %CMAKE_BUILD_SHARED_LIBS% EQUAL OFF (
+  :: Run the tests only for static lib as the shared lib is causing an issue.
+  cmake --build . --target runtest
+)
 
 :: Lint
 cmake --build . --target lint

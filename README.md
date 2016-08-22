@@ -9,7 +9,62 @@ This branch of Caffe ports the framework to Windows.
 [![Build status](https://ci.appveyor.com/api/projects/status/128eg95svel2a2xs?svg=true)]
 (https://ci.appveyor.com/project/pavlejosipovic/caffe-v45qi) AppVeyor (Windows build)
 
-## Windows Setup
+## Windows Setup (with CMake)
+**Requirements**:
+ - Visual Studio 2013
+ - CMake 3.4+
+ - Python 2.7 Anaconda x64 (or Miniconda)
+
+### Install caffe dependencies
+
+This cmake build relies on the `conda` package manager to retreive the dependencies. First you should configure conda to use non default channels to retreive packages:
+```
+> conda config --add channels conda-forge
+> conda config --add channels willyd
+```
+Now update conda to have at least conda 4.1.11:
+```
+> conda update conda --yes
+```
+and install the caffe build dependencies in a new environment:
+```
+> conda create -n caffe caffe-build-dependencies
+```
+and activate it:
+```
+> activate caffe
+```
+you can also choose to install the `caffe-dependencies` meta package instead of `caffe-build-dependencies` to get other required runtime dependencies such `h5py`, `python-leveldb`, etc.
+
+### TODO
+
+CPU_ONLY, cuda, nocuda, cuDNN.
+
+### Build caffe
+
+Setup the msvc compiler using:
+```
+> "%VS120COMNTOOLS%..\..\VC\vcvarsall.bat" amd64
+```
+Setup cmake variables based on your active environment:
+```
+> set_cmake_vars
+```
+Configure using CMake:
+```
+> mkdir build
+> cd build
+> cmake -GNinja -DBLAS=Open -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=OFF -DCMAKE_MODULE_PATH=%CMAKE_MODULE_PATH% -DCMAKE_PREFIX_PATH=%CMAKE_PREFIX_PATH% -DCMAKE_INSTALL_PREFIX=<install_path> ..\
+> ninja
+> ninja install
+```
+
+### Building a shared library
+
+CMake can be used to build a shared library instead of the default static library. To do so follow the above procedure and use `-DBUILD_SHARED_LIBS=ON`. Please note however, that some tests (more specifically the solver related tests) will fail since both the test exectuable and caffe library do not share static objects contained in the protobuf library.
+
+
+## Windows Setup (without CMake)
 **Requirements**: Visual Studio 2013
 
 ### Pre-Build Steps
@@ -45,7 +100,7 @@ pip install protobuf
 ```
 
 #### Remark
-After you have built solution with Python support, in order to use it you have to either:  
+After you have built solution with Python support, in order to use it you have to either:
 * set `PythonPath` environment variable to point to `<caffe_root>\Build\x64\Release\pycaffe`, or
 * copy folder `<caffe_root>\Build\x64\Release\pycaffe\caffe` under `<python_root>\lib\site-packages`.
 
@@ -59,6 +114,10 @@ After you have built solution with Matlab support, in order to use it you have t
 
 ### Build
 Now, you should be able to build `.\windows\Caffe.sln`
+
+
+
+
 
 ## Further Details
 

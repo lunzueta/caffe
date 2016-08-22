@@ -1,10 +1,15 @@
 version: 1.0.{build}
 clone_folder: c:\projects\caffe
 environment:
-  matrix: 
+  matrix:
     - WITH_CMAKE: 1
-    - WITH_CMAKE: 0
-    
+    #- WITH_CMAKE: 0
+    - CMAKE_GENERATOR: Ninja
+    - CMAKE_GENERATOR: Visual Studio 12 2013 Win64
+    - CMAKE_CONFIG: Release
+    - CMAKE_CONFIG: Debug
+    - CMAKE_BUILD_SHARED_LIBS: OFF
+
 build_script:
 - cmd: >-
     call scripts\appveyor\appveyor_build_and_test.cmd
