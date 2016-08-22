@@ -22,7 +22,7 @@ macro (config_hdf5_filter filter_name header)
 	endif()
 endmacro()
 
-if( MSVC )
+if( MSVC AND NOT HDF5_FOUND)
 	# The default FindHDF5.cmake from CMake use h5cc to locate the files,
 	# but h5cc is a .sh and thus not supported by windows environments.
 	# In such a case look for the customized file instead.

@@ -10,7 +10,7 @@ conda config --add channels willyd
 :: Update conda
 conda update conda -y
 :: Create an environment
-conda create -n caffe --yes caffe-dependencies cmake ninja
+conda create -n caffe --yes caffe-build-dependencies cmake ninja
 :: Activate the environement
 call activate caffe
 
