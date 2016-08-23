@@ -33,12 +33,28 @@ cmake -G"%CMAKE_GENERATOR%" ^
 :: Build the library and tools
 cmake --build . --config %CMAKE_CONFIG%
 
+if ERRORLEVEL 1 (
+  echo Build failed
+  exit /b 1
+)
+
 :: Build and exectute the tests
 if "%CMAKE_BUILD_SHARED_LIBS%"=="OFF" (
   :: Run the tests only for static lib as the shared lib is causing an issue.
-  cmake --build . --target runtest
+  cmake --build . --target runtest --config %CMAKE_CONFIG%
+
+  if ERRORLEVEL 1 (
+    echo Tests failed
+    exit /b 1
+  )
 )
 
 :: Lint
-cmake --build . --target lint
+cmake --build . --target lint  --config %CMAKE_CONFIG%
+
+if ERRORLEVEL 1 (
+  echo Lint failed
+  exit /b 1
+)
+
 popd
