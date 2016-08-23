@@ -4,6 +4,7 @@ set(_windows_create_link_header "${CMAKE_CURRENT_LIST_FILE}")
 function(windows_create_link_header target outputfile)
     add_custom_command(TARGET ${target} POST_BUILD
                        COMMAND ${CMAKE_COMMAND}
+                                -DCMAKE_GENERATOR=${CMAKE_GENERATOR}
                                 -DMSVC_VERSION=${MSVC_VERSION}
                                 -DTARGET_FILE=$<TARGET_FILE:${target}>
                                 -DPROJECT_BINARY_DIR=${PROJECT_BINARY_DIR}
@@ -77,12 +78,24 @@ if(CMAKE_SCRIPT_MODE_FILE)
     set(_object_list_file ${CMAKE_CURRENT_BINARY_DIR}/${CONFIGURATION}/object_list.txt)
     set(_symbol_list_file ${CMAKE_CURRENT_BINARY_DIR}/${CONFIGURATION}/symbol_list.txt)
     file(WRITE ${_object_list_file} ${_object_files})
-    # create def file using cmake 3.4 feature (much faster than using dumpbin!)
+    # set the working directory according to generator
+    message("CMAKE_GENERATOR = ${CMAKE_GENERATOR}")
+    if(CMAKE_GENERATOR MATCHES "Visual Studio")
+        message("generator is visual studio")
+        # caffe.lib built by VS contain paths relative to
+        # CMAKE_CURRENT_BINARY_DIR
+        set(__working_directory ${CMAKE_CURRENT_BINARY_DIR})
+    elseif(CMAKE_GENERATOR MATCHES "Ninja")
+        # caffe.lib built by VS contain paths relative to
+        # PROJECT_BINARY_DIR
+        set(__working_directory ${PROJECT_BINARY_DIR})
+    endif()
+    # create def file using cmake 3.4 feature (much faster than     using dumpbin!)
     execute_process(COMMAND ${CMAKE_COMMAND} -E __create_def ${_symbol_list_file} ${_object_list_file}
                     RESULT_VARIABLE _result
                     OUTPUT_VARIABLE _output
                     ERROR_VARIABLE _error
-                    WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
+                    WORKING_DIRECTORY ${__working_directory}
     )
     if(NOT ${_result} EQUAL 0)
       message(FATAL_ERROR "Failed to create_def using cmake -E __create_def.\nResult code: ${_result}\nError: ${_error}\nOutput: ${_output}")
