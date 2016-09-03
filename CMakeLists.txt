@@ -14,17 +14,6 @@ set(CAFFE_TARGET_VERSION "1.0.0-rc3")
 set(CAFFE_TARGET_SOVERSION "1.0.0-rc3")
 add_definitions(-DCAFFE_VERSION=${CAFFE_TARGET_VERSION})
 
-# definition needed to include CMake generated files
-add_definitions(-DCMAKE_WINDOWS_BUILD)
-
-# ---[ Download or resolve the provided dependencies folder
-
-if( MSVC )
-    set(WITH_PREBUILD_MSVC_DEPENDENCIES ON CACHE BOOL "Use the pre-built dependencies. Note that this can only work for Visual Studio 2013 x64.")
-else()
-    set(WITH_PREBUILD_MSVC_DEPENDENCIES OFF)
-endif()
-
 # ---[ Using cmake scripts and modules
 list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake/Modules)
 

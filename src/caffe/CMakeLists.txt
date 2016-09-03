@@ -71,7 +71,9 @@ elseif(MSVC AND NOT BUILD_SHARED_LIBS)
   windows_create_link_header(caffe ${caffe_symbols_hdr})
   get_filename_component(_name ${caffe_symbols_hdr} NAME)
   set(CAFFE_INCLUDE_SYMBOLS "#include \"caffe/${_name}\"")
-  target_compile_definitions(caffe PRIVATE ${_caffe_static_compile_def})
+  # definition needed to include CMake generated files
+  target_compile_definitions(caffe PRIVATE ${_caffe_static_compile_def}
+                                   PUBLIC -DCMAKE_WINDOWS_BUILD)
 endif()
 
 configure_file(${caffe_export_hdr_in} ${caffe_export_hdr})
@@ -83,6 +85,9 @@ configure_file(${caffe_export_hdr_in} ${caffe_export_hdr})
 install(DIRECTORY ${Caffe_INCLUDE_DIR}/caffe DESTINATION include)
 install(FILES ${proto_hdrs} DESTINATION include/caffe/proto)
 install(TARGETS caffe proto EXPORT CaffeTargets DESTINATION lib)
+if(MSVC AND NOT BUILD_SHARED_LIBS)
+  install(FILES ${caffe_export_hdr} ${caffe_symbols_hdr} DESTINATION include/caffe)
+endif()
 
 file(WRITE ${PROJECT_BINARY_DIR}/__init__.py)
 list(APPEND proto_python ${PROJECT_BINARY_DIR}/__init__.py)
