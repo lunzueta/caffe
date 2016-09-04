@@ -24,7 +24,66 @@ Check out the [project site](http://caffe.berkeleyvision.org) for all the detail
 
 and step-by-step examples.
 
-## Windows Setup
+[![Windows CMake Build status](https://ci.appveyor.com/api/projects/status/lc0pdvlv89a9i9ae?svg=true)](https://ci.appveyor.com/project/willyd/caffe) AppVeyor (Windows CMake build)
+
+
+## Windows Setup (with CMake)
+**Requirements**:
+ - Visual Studio 2013
+ - CMake 3.4+
+ - Python 2.7 Anaconda x64 (or Miniconda)
+
+### Install caffe dependencies
+
+This cmake build relies on the `conda` package manager to retreive the dependencies. First you should configure conda to use non default channels to retreive packages:
+```
+> conda config --add channels conda-forge
+> conda config --add channels willyd
+```
+Now update conda to have at least conda 4.1.11:
+```
+> conda update conda --yes
+```
+and install the caffe build dependencies in a new environment:
+```
+> conda create -n caffe caffe-build-dependencies
+```
+and activate it:
+```
+> activate caffe
+```
+you can also choose to install the `caffe-dependencies` meta package instead of `caffe-build-dependencies` to get other required runtime dependencies such `h5py`, `python-leveldb`, etc.
+
+### TODO
+
+CPU_ONLY, cuda, nocuda, cuDNN.
+
+### Build caffe
+
+Setup the msvc compiler using:
+```
+> "%VS120COMNTOOLS%..\..\VC\vcvarsall.bat" amd64
+```
+Setup cmake variables based on your active environment:
+```
+> set_cmake_vars
+```
+Configure using CMake:
+```
+> mkdir build
+> cd build
+> cmake -GNinja -DBLAS=Open -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=OFF -DCMAKE_MODULE_PATH=%CMAKE_MODULE_PATH% -DCMAKE_PREFIX_PATH=%CMAKE_PREFIX_PATH% -DCMAKE_INSTALL_PREFIX=<install_path> ..\
+> ninja
+> ninja install
+```
+It is also possible to use the `Visual Studio 12 2013 Win64` generator instead of the `Ninja generator`. Please note however that Visual Studio will not parallelize the build of the CUDA files which results in much longer build times.
+
+### Building a shared library
+
+CMake can be used to build a shared library instead of the default static library. To do so follow the above procedure and use `-DBUILD_SHARED_LIBS=ON`. Please note however, that some tests (more specifically the solver related tests) will fail since both the test exectuable and caffe library do not share static objects contained in the protobuf library.
+
+
+## Windows Setup (without CMake)
 **Requirements**: Visual Studio 2013
 
 ### Pre-Build Steps
@@ -60,7 +119,7 @@ pip install protobuf
 ```
 
 #### Remark
-After you have built solution with Python support, in order to use it you have to either:  
+After you have built solution with Python support, in order to use it you have to either:
 * set `PythonPath` environment variable to point to `<caffe_root>\Build\x64\Release\pycaffe`, or
 * copy folder `<caffe_root>\Build\x64\Release\pycaffe\caffe` under `<python_root>\lib\site-packages`.
 
@@ -81,6 +140,8 @@ Caffe is released under the [BSD 2-Clause license](https://github.com/BVLC/caffe
 The BVLC reference models are released for unrestricted use.
 
 Please cite Caffe in your publications if it helps your research:
+
+## Further Details
 
     @article{jia2014caffe,
       Author = {Jia, Yangqing and Shelhamer, Evan and Donahue, Jeff and Karayev, Sergey and Long, Jonathan and Girshick, Ross and Guadarrama, Sergio and Darrell, Trevor},

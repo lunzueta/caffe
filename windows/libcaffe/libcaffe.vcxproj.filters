@@ -350,6 +350,8 @@
     </ClCompile>
     <ClCompile Include="..\..\src\caffe\layers\smooth_L1_loss_ohem_layer.cpp">
       <Filter>src\layers</Filter>
+    <ClCompile Include="..\..\src\caffe\solver_factory.cpp">
+      <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

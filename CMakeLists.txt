@@ -24,11 +24,17 @@ include(cmake/Targets.cmake)
 include(cmake/Misc.cmake)
 include(cmake/Summary.cmake)
 include(cmake/ConfigGen.cmake)
+include(cmake/WindowsCreateLinkHeader.cmake)
 
 # ---[ Options
 caffe_option(CPU_ONLY  "Build Caffe without CUDA support" OFF) # TODO: rename to USE_CUDA
 caffe_option(USE_CUDNN "Build Caffe with cuDNN library support" ON IF NOT CPU_ONLY)
-caffe_option(BUILD_SHARED_LIBS "Build shared libraries" ON)
+if(MSVC)
+  # default to static libs
+  caffe_option(BUILD_SHARED_LIBS "Build shared libraries" OFF)
+else()
+  caffe_option(BUILD_SHARED_LIBS "Build shared libraries" ON)
+endif()
 caffe_option(BUILD_python "Build Python wrapper" ON)
 set(python_version "2" CACHE STRING "Specify which Python version to use")
 caffe_option(BUILD_matlab "Build Matlab wrapper" OFF IF UNIX OR APPLE)
@@ -38,6 +44,24 @@ caffe_option(USE_OPENCV "Build with OpenCV support" ON)
 caffe_option(USE_LEVELDB "Build with levelDB" ON)
 caffe_option(USE_LMDB "Build with lmdb" ON)
 caffe_option(ALLOW_LMDB_NOLOCK "Allow MDB_NOLOCK when reading LMDB files (only if necessary)" OFF)
+
+# CMake 3.4 introduced a WINDOWS_EXPORT_ALL_SYMBOLS target property that makes it possible to
+# build shared libraries without using the usual declspec() decoration.
+# See: https://blog.kitware.com/create-dlls-on-windows-without-declspec-using-new-cmake-export-all-feature/
+# and https://cmake.org/cmake/help/v3.5/prop_tgt/WINDOWS_EXPORT_ALL_SYMBOLS.html
+# for details.
+if(MSVC AND BUILD_SHARED_LIBS AND CMAKE_VERSION VERSION_LESS 3.4)
+  message(FATAL_ERROR "CMake 3.4 or newer is required to build a shared library with Microsoft Visual Studio")
+endif()
+
+if(MSVC AND BUILD_SHARED_LIBS)
+  # Some tests (solver tests) fail when caffe is built as a shared library. The problem comes
+  # from protobuf that has a global static empty_string_ variable. Since caffe and test.testbin
+  # link to a static protobuf library both end up with their own instance of the empty_string_
+  # variable. This causes some SEH exception to occur. In practice if the caffe executable does not link
+  # to protobuf this problem should not happen. Use at your own risk.
+  message(WARNING "Some tests (solvers) will fail when building as a shared library with MSVC")
+endif()
 
 # ---[ Dependencies
 include(cmake/Dependencies.cmake)
@@ -54,7 +78,9 @@ if(USE_libstdcpp)
   message("-- Warning: forcing libstdc++ (controlled by USE_libstdcpp option in cmake)")
 endif()
 
-add_definitions(-DGTEST_USE_OWN_TR1_TUPLE)
+if(NOT MSVC)
+  add_definitions(-DGTEST_USE_OWN_TR1_TUPLE)
+endif()
 
 # ---[ Warnings
 caffe_warnings_disable(CMAKE_CXX_FLAGS -Wno-sign-compare -Wno-uninitialized)
