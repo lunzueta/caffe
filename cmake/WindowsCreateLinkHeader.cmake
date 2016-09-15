@@ -4,12 +4,12 @@ set(_windows_create_link_header "${CMAKE_CURRENT_LIST_FILE}")
 function(windows_create_link_header target outputfile)
     add_custom_command(TARGET ${target} POST_BUILD
                        COMMAND ${CMAKE_COMMAND}
-                                -DCMAKE_GENERATOR=${CMAKE_GENERATOR}
+                                #-DCMAKE_GENERATOR=${CMAKE_GENERATOR}
                                 -DMSVC_VERSION=${MSVC_VERSION}
                                 -DTARGET_FILE=$<TARGET_FILE:${target}>
-                                -DPROJECT_BINARY_DIR=${PROJECT_BINARY_DIR}
-                                -DCMAKE_CURRENT_BINARY_DIR=${CMAKE_CURRENT_BINARY_DIR}
-                                -DCONFIGURATION=$<CONFIGURATION>
+                                #-DPROJECT_BINARY_DIR=${PROJECT_BINARY_DIR}
+                                #-DCMAKE_CURRENT_BINARY_DIR=${CMAKE_CURRENT_BINARY_DIR}
+                                #-DCONFIGURATION=$<CONFIGURATION>
                                 -DOUTPUT_FILE=${outputfile}
                                 -P ${_windows_create_link_header}
                         BYPRODUCTS ${outputfile}
@@ -56,58 +56,17 @@ if(CMAKE_SCRIPT_MODE_FILE)
     # find the dumpbin exe
     find_dumpbin(dumpbin)
     # execute dumpbin to generate a list of symbols
-    execute_process(COMMAND ${dumpbin} /ARCHIVEMEMBERS ${TARGET_FILE}
+    execute_process(COMMAND ${dumpbin} /SYMBOLS ${TARGET_FILE}
                     RESULT_VARIABLE _result
                     OUTPUT_VARIABLE _output
                     ERROR_VARIABLE _error
     )
-    # convert EOL separated string to list
-    string(REPLACE "\n" ";" _output ${_output})
-    # match any line that references an object
-    foreach(_line ${_output})
-        string(REGEX MATCH "^Archive member name at .* /[0-9]+ *([^ ].*\\.obj)$" _match ${_line})
-        if(_match)
-            file(TO_CMAKE_PATH ${CMAKE_MATCH_1} _object_file)
-            file(TO_NATIVE_PATH ${_object_file} _object_native_filepath)
-            list(APPEND _object_files ${_object_native_filepath})
-        endif()
+    # match all layers and solvers instantiation guard
+    string(REGEX MATCHALL "\\?gInstantiationGuard[^\\(\\) ]*" __symbols ${_output})
+    # define a string to generate a list of pragmas
+    foreach(__symbol ${__symbols})
+        set(__pragma "${__pragma}#pragma comment(linker, \"/include:${__symbol}\")\n")        
     endforeach()
-
-    # convert list to EOL separated string
-    string(REPLACE ";" "\n" _object_files "${_object_files}")
-    set(_object_list_file ${CMAKE_CURRENT_BINARY_DIR}/${CONFIGURATION}/object_list.txt)
-    set(_symbol_list_file ${CMAKE_CURRENT_BINARY_DIR}/${CONFIGURATION}/symbol_list.txt)
-    file(WRITE ${_object_list_file} ${_object_files})
-    # set the working directory according to generator
-    message("CMAKE_GENERATOR = ${CMAKE_GENERATOR}")
-    if(CMAKE_GENERATOR MATCHES "Visual Studio")
-        message("generator is visual studio")
-        # caffe.lib built by VS contain paths relative to
-        # CMAKE_CURRENT_BINARY_DIR
-        set(__working_directory ${CMAKE_CURRENT_BINARY_DIR})
-    elseif(CMAKE_GENERATOR MATCHES "Ninja")
-        # caffe.lib built by VS contain paths relative to
-        # PROJECT_BINARY_DIR
-        set(__working_directory ${PROJECT_BINARY_DIR})
-    endif()
-    # create def file using cmake 3.4 feature (much faster than     using dumpbin!)
-    execute_process(COMMAND ${CMAKE_COMMAND} -E __create_def ${_symbol_list_file} ${_object_list_file}
-                    RESULT_VARIABLE _result
-                    OUTPUT_VARIABLE _output
-                    ERROR_VARIABLE _error
-                    WORKING_DIRECTORY ${__working_directory}
-    )
-    if(NOT ${_result} EQUAL 0)
-      message(FATAL_ERROR "Failed to create_def using cmake -E __create_def.\nResult code: ${_result}\nError: ${_error}\nOutput: ${_output}")
-    endif()
-    # convert the .def to a list of pragmas
-    file(READ ${_symbol_list_file} _symbols)
-    # remove the exports keyword and data specifier
-    string(REPLACE "EXPORTS \n" "" _symbols ${_symbols})
-    string(REPLACE " \t DATA" "" _symbols ${_symbols})
-    # remove all the leading tabs and add the required pragma
-    string(REGEX REPLACE "\t([^ \n]*)" "#pragma comment(linker, \"/include:\\1\")" CAFFE_INCLUDE_SYMBOLS ${_symbols})
-    # configure the header file template
-    file(WRITE ${OUTPUT_FILE} ${CAFFE_INCLUDE_SYMBOLS})
+    file(WRITE ${OUTPUT_FILE} ${__pragma})
 endif()
 
