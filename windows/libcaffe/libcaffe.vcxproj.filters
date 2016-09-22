@@ -336,6 +336,14 @@
     <ClCompile Include="..\..\src\caffe\util\signal_handler.cpp">
       <Filter>src\util</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\caffe\layers\detectnet_transform_layer.cpp">
+      <Filter>src\layers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\caffe\layers\l1_loss_layer.cpp">
+      <Filter>src\layers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\caffe\util\detectnet_coverage_rectangular.cpp">
+      <Filter>src\util</Filter>
     <ClCompile Include="..\..\src\caffe\layers\psroi_pooling_layer.cpp">
       <Filter>src\layers</Filter>
     </ClCompile>
@@ -654,6 +662,15 @@
     </ClInclude>
     <ClInclude Include="..\..\include\caffe\layers\scale_layer.hpp">
       <Filter>include\layers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\caffe\layers\detectnet_transform_layer.hpp">
+      <Filter>include\layers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\caffe\layers\l1_loss_layer.hpp">
+      <Filter>include\layers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\caffe\util\detectnet_coverage.hpp">
+      <Filter>include\util</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\caffe\layers\psroi_pooling_layer.hpp">
       <Filter>include\layers</Filter>
