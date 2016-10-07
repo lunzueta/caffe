@@ -37,10 +37,12 @@ if __name__ == '__main__':
 
     dep_filename = os.path.split(url)[1]
     # Download binaries
+    print("Downloading dependencies. Please wait...")
     urllib.urlretrieve(url, dep_filename, reporthook)
     if not model_checks_out(dep_filename, sha1):
         print('ERROR: dependencies did not download correctly! Run this again.')
         sys.exit(1)
+    print("\nDone.")
 
     # Extract the binaries from the tar file
     tar = tarfile.open(dep_filename, 'r:bz2')
