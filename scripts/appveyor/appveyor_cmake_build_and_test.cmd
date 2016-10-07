@@ -15,7 +15,7 @@ conda install --yes cmake ninja numpy
 mkdir build
 pushd build
 :: Download dependencies from VS 2013 x64
-python ..\scripts\download_model_binary.py --msvc_version v120
+python ..\scripts\download_prebuilt_dependencies.py --msvc_version v120
 :: Add the dependencies to the PATH
 set PATH=%PATH%;%cd%\libraries\bin;%cd%\libraries\lib;%cd%\libraries\x64\vc12\bin
 :: Setup the environement for VS 2013 x64
