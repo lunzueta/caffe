@@ -6,28 +6,26 @@ set PATH=C:\Miniconda-x64;C:\Miniconda-x64\Scripts;C:\Miniconda-x64\Library\bin;
 python --version
 :: Add the required channels
 conda config --add channels conda-forge
-conda config --add channels willyd
 :: Update conda
 conda update conda -y
 :: Create an environment
-conda create -n caffe --yes caffe-build-dependencies cmake ninja
-:: Activate the environement
-call activate caffe
-
-:: Call this script to set the right cmake variables
-call set_cmake_vars
+conda install --yes cmake ninja numpy
 
 :: Create build directory and configure cmake
 mkdir build
 pushd build
+:: Download dependencies from VS 2013 x64
+python ..\scripts\download_model_binary.py --msvc_version v120
+:: Add the dependencies to the PATH
+set PATH=%PATH%;%cd%\libraries\bin;%cd%\libraries\lib;%cd%\libraries\x64\vc12\bin
 :: Setup the environement for VS 2013 x64
 call "%VS120COMNTOOLS%..\..\VC\vcvarsall.bat" amd64
+:: Configure using cmake and using the caffe-builder dependencies
 cmake -G"%CMAKE_GENERATOR%" ^
       -DBLAS=Open ^
       -DCMAKE_BUILD_TYPE=%CMAKE_CONFIG% ^
       -DBUILD_SHARED_LIBS=%CMAKE_BUILD_SHARED_LIBS% ^
-      -DCMAKE_MODULE_PATH=%CMAKE_MODULE_PATH% ^
-      -DCMAKE_PREFIX_PATH=%CMAKE_PREFIX_PATH% ^
+      -C libraries\caffe-builder-config.cmake
       ..\
 
 :: Build the library and tools
