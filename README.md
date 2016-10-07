@@ -14,7 +14,7 @@ This branch of Caffe ports the framework to Windows.
  - CMake 3.4+
  - Python 2.7 Anaconda x64 (or Miniconda)
 
-you may also like to try the [ninja](https://ninja-build.org/) cmake generator as it the build times can be much lower on multi-core machines. ninja can be installed easily with the `conda` package manager by adding the conda-forge channel with:
+you may also like to try the [ninja](https://ninja-build.org/) cmake generator as the build times can be much lower on multi-core machines. ninja can be installed easily with the `conda` package manager by adding the conda-forge channel with:
 ```cmd
 > conda config --add channels conda-forge
 > conda install ninja --yes
