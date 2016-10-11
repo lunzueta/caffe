@@ -102,3 +102,8 @@ MANIFEST-*
 *.opensdf
 *.pdb
 *.props
+build_rel/
+build_dbg/
+install/
+src/caffe/test/test_data/sample_data_list.txt.gen.cmake
+src/caffe/test/test_data/solver_data_list.txt.gen.cmake
