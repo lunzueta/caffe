@@ -66,7 +66,19 @@ To use cuDNN you need to define the CUDNN_ROOT cache variable to point to where 
 ```
 Make sure to use forward slashes (`/`) in the path. You will need to add the folder containing the cuddn DLL to your PATH.
 
-#### Building a shared library
+### Building only for CPU
+
+If CUDA is not installed Caffe will default to a CPU_ONLY build. If you have CUDA installed but want a CPU only build you maybe use the CMake option `-DCPU_ONLY=1`.
+
+### Using the Python interface
+
+If Python is installed the default is to build the python interface and python layers. If you wish to disable the python layers or the python build use the CMake options `-DBUILD_python_layer=0` and `-DBUILD_python=0` respectively. In order to use the python interface you need to either add the `%CAFFE_ROOT%\python` folder to your python path of copy the `%CAFFE_ROOT%\python\caffe` folder to your `site_packages` folder. Also, you need to edit your `PATH` or copy the required DLLs next to the `caffe.pyd` file.
+
+### Using the MATLAB interface
+
+TODO
+
+### Building a shared library
 
 CMake can be used to build a shared library instead of the default static library. To do so follow the above procedure and use `-DBUILD_SHARED_LIBS=ON`. Please note however, that some tests (more specifically the solver related tests) will fail since both the test exectuable and caffe library do not share static objects contained in the protobuf library.
 
@@ -84,9 +96,10 @@ cmake --build . --target runtest --config %CMAKE_CONFIGURATION%
 
 ### TODOs
 - Visual Studio 2015
-- CPU_ONLY
-- Python
-- MATLAB
+
+## Previous Visual Studio based build
+
+The previous windows build based on Visual Studio project files is now deprecated. However, it is still available in the `windows` folder. Please see the `README.md` in there for details.
 
 ## Known issues
 
