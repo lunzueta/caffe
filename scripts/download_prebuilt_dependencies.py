@@ -12,8 +12,10 @@ import tarfile
 from download_model_binary import reporthook
 
 WIN_DEPENDENCIES_URLS = dict(
-    v120=("https://github.com/willyd/caffe-builder/releases/download/v1.0.0/libraries_v120_x64_1.0.0.tar.bz2",
-          "e8e92d1d19e99f0a52e0fde23a99249b435d5d8b")
+    v120=("https://github.com/willyd/caffe-builder/releases/download/v1.0.1/libraries_v120_x64_py27_1.0.1.tar.bz2",
+          "3f45fe3f27b27a7809f9de1bd85e56888b01dbe2"),
+    v140=("https://github.com/willyd/caffe-builder/releases/download/v1.0.1/libraries_v140_x64_py27_1.0.1.tar.bz2",
+          "427faf33745cf8cd70c7d043c85db7dda7243122"),
 )
 
 # function for checking SHA1.
@@ -25,7 +27,7 @@ def model_checks_out(filename, sha1):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
         description='Download prebuilt dependencies for windows.')
-    parser.add_argument('--msvc_version', default='v120', choices=['v120',])
+    parser.add_argument('--msvc_version', default='v120', choices=['v120', 'v140'])
     args = parser.parse_args()
 
     # get the appropriate url

@@ -19,7 +19,7 @@ pushd build
 python ..\scripts\download_prebuilt_dependencies.py --msvc_version v120
 :: Add the dependencies to the PATH
 :: Prepending is crucial since the hdf5 dll may conflict with python's
-set PATH=%cd%\libraries\bin;%cd%\libraries\lib;%cd%\libraries\x64\vc12\bin;%PATH%
+call %cd%\libraries\prependpath.bat
 :: Setup the environement for VS 2013 x64
 call "%VS120COMNTOOLS%..\..\VC\vcvarsall.bat" amd64
 :: Configure using cmake and using the caffe-builder dependencies
