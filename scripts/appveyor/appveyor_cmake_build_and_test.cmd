@@ -6,10 +6,11 @@ set PATH=C:\Miniconda-x64;C:\Miniconda-x64\Scripts;C:\Miniconda-x64\Library\bin;
 python --version
 :: Add the required channels
 conda config --add channels conda-forge
+conda config --add channels willyd
 :: Update conda
 conda update conda -y
 :: Create an environment
-conda install --yes cmake ninja numpy
+conda install --yes cmake ninja numpy scipy protobuf==3.1.0.vc12 six scikit-image
 
 :: Create build directory and configure cmake
 mkdir build
@@ -18,7 +19,7 @@ pushd build
 python ..\scripts\download_prebuilt_dependencies.py --msvc_version v120
 :: Add the dependencies to the PATH
 :: Prepending is crucial since the hdf5 dll may conflict with python's
-set PATH=%cd%\libraries\bin;%cd%\libraries\lib;%cd%\libraries\x64\vc12\bin;%PATH%
+call %cd%\libraries\prependpath.bat
 :: Setup the environement for VS 2013 x64
 call "%VS120COMNTOOLS%..\..\VC\vcvarsall.bat" amd64
 :: Configure using cmake and using the caffe-builder dependencies
@@ -45,6 +46,18 @@ if "%CMAKE_BUILD_SHARED_LIBS%"=="OFF" (
   if ERRORLEVEL 1 (
     echo Tests failed
     exit /b 1
+  )
+
+  :: Run python tests only in Release build since
+  :: the _caffe module is _caffe-d is debug
+  if "%CMAKE_CONFIG%"=="Release" (
+    :: Run the python tests
+    cmake --build . --target pytest
+
+    if ERRORLEVEL 1 (
+      echo Python tests failed
+      exit /b 1
+    )
   )
 )
 

@@ -45,7 +45,34 @@ In the above command `CMAKE_GENERATOR` can be either `Ninja` or `"Visual Studio 
 
 In case on step in the above procedure is not working please refer to the appveyor build scripts in `%CAFFE_ROOT%\scripts\appveyor` to see the most up to date build procedure.
 
-#### Building a shared library
+### Use cuDNN
+
+To use cuDNN you need to define the CUDNN_ROOT cache variable to point to where you unpacked the cuDNN files. For example, the build command above would become:
+
+```
+> set CMAKE_GENERATOR=Ninja
+> set CMAKE_CONFIGURATION=Release
+> mkdir build
+> cd build
+> cmake -G%CMAKE_GENERATOR% -DBLAS=Open -DCMAKE_BUILD_TYPE=%CMAKE_CONFIGURATION% -DBUILD_SHARED_LIBS=OFF -DCMAKE_INSTALL_PREFIX=<install_path> -DCUDNNROOT=<path_to_cudnn> -C %CAFFE_DEPENDENCIES%\caffe-builder-config.cmake  ..\
+> cmake --build . --config %CMAKE_CONFIGURATION%
+> cmake
+```
+Make sure to use forward slashes (`/`) in the path. You will need to add the folder containing the cuddn DLL to your PATH.
+
+### Building only for CPU
+
+If CUDA is not installed Caffe will default to a CPU_ONLY build. If you have CUDA installed but want a CPU only build you maybe use the CMake option `-DCPU_ONLY=1`.
+
+### Using the Python interface
+
+If Python is installed the default is to build the python interface and python layers. If you wish to disable the python layers or the python build use the CMake options `-DBUILD_python_layer=0` and `-DBUILD_python=0` respectively. In order to use the python interface you need to either add the `%CAFFE_ROOT%\python` folder to your python path of copy the `%CAFFE_ROOT%\python\caffe` folder to your `site_packages` folder. Also, you need to edit your `PATH` or copy the required DLLs next to the `caffe.pyd` file.
+
+### Using the MATLAB interface
+
+TODO
+
+### Building a shared library
 
 CMake can be used to build a shared library instead of the default static library. To do so follow the above procedure and use `-DBUILD_SHARED_LIBS=ON`. Please note however, that some tests (more specifically the solver related tests) will fail since both the test exectuable and caffe library do not share static objects contained in the protobuf library.
 
@@ -62,11 +89,16 @@ cmake --build . --target runtest --config %CMAKE_CONFIGURATION%
 ```
 
 ### TODOs
-- cuDNN
 - Visual Studio 2015
-- CPU_ONLY
-- Python
-- MATLAB
+
+## Previous Visual Studio based build
+
+The previous windows build based on Visual Studio project files is now deprecated. However, it is still available in the `windows` folder. Please see the `README.md` in there for details.
+
+## Known issues
+
+- The `GPUTimer` related test cases always fail on Windows. This seems to be a difference between UNIX and Windows.
+- Shared library (DLL) build will have failing tests.
 
 ## Further Details
 

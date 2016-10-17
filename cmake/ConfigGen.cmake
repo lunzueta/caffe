@@ -56,6 +56,10 @@ function(caffe_generate_export_configs)
     list(APPEND Caffe_DEFINITIONS -DCPU_ONLY)
   endif()
 
+  # Disable autolinking on platforms that defaults to this
+  # e.g. Windows
+  list(APPEND Caffe_DEFINITIONS -DBOOST_ALL_NO_LIB)
+
   if(USE_OPENCV)
     list(APPEND Caffe_DEFINITIONS -DUSE_OPENCV)
   endif()

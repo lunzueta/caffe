@@ -75,6 +75,10 @@ elseif(MSVC AND NOT BUILD_SHARED_LIBS)
   target_compile_definitions(caffe PRIVATE ${_caffe_static_compile_def}
                                    PUBLIC -DCMAKE_WINDOWS_BUILD)
 endif()
+if(MSVC)
+  # Disable Boost autolinking for consuming projects
+  target_compile_definitions(caffe PUBLIC -DBOOST_ALL_NO_LIB)
+endif()
 
 configure_file(${caffe_export_hdr_in} ${caffe_export_hdr})
 

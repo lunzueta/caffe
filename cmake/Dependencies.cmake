@@ -4,15 +4,13 @@ set(Caffe_LINKER_LIBS "")
 # ---[ Boost
 find_package(Boost 1.46 REQUIRED COMPONENTS system thread filesystem)
 include_directories(SYSTEM ${Boost_INCLUDE_DIR})
-add_definitions(
-    -DBOOST_ALL_NO_LIB
-    )
+add_definitions(-DBOOST_ALL_NO_LIB)
 list(APPEND Caffe_LINKER_LIBS ${Boost_LIBRARIES})
 
 if(DEFINED MSVC)
-    add_definitions(
-        -DBOOST_NO_CXX11_TEMPLATE_ALIASES
-        )
+  # We should define this only when necessary,
+  # i.e VS 2013 Update 4 or earlier.
+  add_definitions(-DBOOST_NO_CXX11_TEMPLATE_ALIASES)
 endif()
 
 # ---[ Threads

@@ -2,8 +2,7 @@
 set(CMAKE_SOURCE_DIR ..)
 set(python_executable)
 if(WIN32)
-  # TODO do not rely on python beign in path
-  set(python_executable python)
+  set(python_executable ${PYTHON_EXECUTABLE})
 endif()
 set(LINT_COMMAND ${python_executable} ${CMAKE_SOURCE_DIR}/scripts/cpp_lint.py)
 set(SRC_FILE_EXTENSIONS h hpp hu c cpp cu cc)
