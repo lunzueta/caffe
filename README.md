@@ -58,15 +58,24 @@ To use cuDNN you need to define the CUDNN_ROOT cache variable to point to where 
 > cmake --build . --config %CMAKE_CONFIGURATION%
 > cmake
 ```
-Make sure to use forward slashes (`/`) in the path. You will need to add the folder containing the cuddn DLL to your PATH.
+Make sure to use forward slashes (`/`) in the path. You will need to add the folder containing the cuDNN DLL to your PATH.
 
 ### Building only for CPU
 
-If CUDA is not installed Caffe will default to a CPU_ONLY build. If you have CUDA installed but want a CPU only build you maybe use the CMake option `-DCPU_ONLY=1`.
+If CUDA is not installed Caffe will default to a CPU_ONLY build. If you have CUDA installed but want a CPU only build you may use the CMake option `-DCPU_ONLY=1`.
 
 ### Using the Python interface
 
-If Python is installed the default is to build the python interface and python layers. If you wish to disable the python layers or the python build use the CMake options `-DBUILD_python_layer=0` and `-DBUILD_python=0` respectively. In order to use the python interface you need to either add the `%CAFFE_ROOT%\python` folder to your python path of copy the `%CAFFE_ROOT%\python\caffe` folder to your `site_packages` folder. Also, you need to edit your `PATH` or copy the required DLLs next to the `caffe.pyd` file.
+The recommended Python distribution is Anaconda or Miniconda. To successfully build the python interface you need to install the following packages:
+```
+conda install --yes numpy scipy matplotlib scikit-image pip six
+```
+also you will need a protobuf python package that is compatible with pre-built dependencies. This package can be installed this way:
+```
+conda config --add channels willyd
+conda install --yes protobuf==3.1.0.vc12
+```
+If Python is installed the default is to build the python interface and python layers. If you wish to disable the python layers or the python build use the CMake options `-DBUILD_python_layer=0` and `-DBUILD_python=0` respectively. In order to use the python interface you need to either add the `%CAFFE_ROOT%\python` folder to your python path of copy the `%CAFFE_ROOT%\python\caffe` folder to your `site_packages` folder. Also, you need to edit your `PATH` or copy the required DLLs next to the `caffe.pyd` file. Only Python 2.7 x64 has been tested on Windows.
 
 ### Using the MATLAB interface
 
@@ -83,17 +92,18 @@ To run the tests or any caffe exectuable you will have to update your `PATH` to 
 :: Prepend to avoid conflicts with other libraries with same name
 > set PATH=%CAFFE_DEPENDENCIES%\bin;%CAFFE_DEPENDENCIES%\lib;%CAFFE_DEPENDENCIES%\x64\vc12\bin;%PATH%
 ```
-then the tests can be run from the build folder:
+or you can use the prependpath.bat included with the prebuilt dependencies. Then the tests can be run from the build folder:
 ```
 cmake --build . --target runtest --config %CMAKE_CONFIGURATION%
 ```
 
 ### TODOs
-- Visual Studio 2015
+- Visual Studio 2015: Prebuilt dependencies are available. Test if the build works and update appveyor config accordingly.
+- Python 3.5: Create protobuf packages for 3.5.
 
 ## Previous Visual Studio based build
 
-The previous windows build based on Visual Studio project files is now deprecated. However, it is still available in the `windows` folder. Please see the `README.md` in there for details.
+The previous windows build based on Visual Studio project files is now deprecated. However, it is still available in the `windows` folder. Please see the [README.md](windows/README.md) in there for details.
 
 ## Known issues
 

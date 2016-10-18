@@ -10,8 +10,8 @@ endif()
 project(Caffe C CXX)
 
 # ---[ Caffe version
-set(CAFFE_TARGET_VERSION "1.0.0-rc3" CACHE STRING "Caffe logical version")
-set(CAFFE_TARGET_SOVERSION "1.0.0-rc3" CACHE STRING "Caffe soname version")
+set(CAFFE_TARGET_VERSION "1.0.0-rc3")
+set(CAFFE_TARGET_SOVERSION "1.0.0-rc3")
 add_definitions(-DCAFFE_VERSION=${CAFFE_TARGET_VERSION})
 
 # ---[ Using cmake scripts and modules
@@ -64,24 +64,6 @@ if(MSVC AND BUILD_SHARED_LIBS)
   message(WARNING "Some tests (solvers) will fail when building as a shared library with MSVC")
 endif()
 
-# CMake 3.4 introduced a WINDOWS_EXPORT_ALL_SYMBOLS target property that makes it possible to
-# build shared libraries without using the usual declspec() decoration.
-# See: https://blog.kitware.com/create-dlls-on-windows-without-declspec-using-new-cmake-export-all-feature/
-# and https://cmake.org/cmake/help/v3.5/prop_tgt/WINDOWS_EXPORT_ALL_SYMBOLS.html
-# for details.
-if(MSVC AND BUILD_SHARED_LIBS AND CMAKE_VERSION VERSION_LESS 3.4)
-  message(FATAL_ERROR "CMake 3.4 or newer is required to build a shared library with Microsoft Visual Studio")
-endif()
-
-if(MSVC AND BUILD_SHARED_LIBS)
-  # Some tests (solver tests) fail when caffe is built as a shared library. The problem comes
-  # from protobuf that has a global static empty_string_ variable. Since caffe and test.testbin
-  # link to a static protobuf library both end up with their own instance of the empty_string_
-  # variable. This causes some SEH exception to occur. In practice if the caffe executable does not link
-  # to protobuf this problem should not happen. Use at your own risk.
-  message(WARNING "Some tests (solvers) will fail when building as a shared library with MSVC")
-endif()
-
 # ---[ Dependencies
 include(cmake/Dependencies.cmake)
 
@@ -109,8 +91,7 @@ configure_file(cmake/Templates/caffe_config.h.in "${PROJECT_BINARY_DIR}/caffe_co
 
 # ---[ Includes
 set(Caffe_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/include)
-set(THIRDPARTY_DIR ${PROJECT_SOURCE_DIR}/3rdparty)
-include_directories(${Caffe_INCLUDE_DIR} ${PROJECT_BINARY_DIR} ${THIRDPARTY_DIR})
+include_directories(${Caffe_INCLUDE_DIR} ${PROJECT_BINARY_DIR})
 include_directories(BEFORE src) # This is needed for gtest.
 
 # ---[ Subdirectories
