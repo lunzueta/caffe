@@ -21,7 +21,7 @@ if(NOT MSVC AND NOT BUILD_SHARED_LIBS AND build_using MATCHES Matlab)
 endif()
 
 if(NOT MSVC)
-  # helper function to set proper mex file extention
+# helper function to set proper mex file extension
   function(caffe_fetch_and_set_proper_mexext mexfile_variable)
     execute_process(COMMAND ${Matlab_mexext} OUTPUT_STRIP_TRAILING_WHITESPACE RESULT_VARIABLE res OUTPUT_VARIABLE ext)
     if(res MATCHES 0)
