@@ -109,9 +109,6 @@ if %WITH_NINJA% EQU 0 (
     set CMAKE_GENERATOR=Ninja
 )
 
-SET(CMAKE_C_COMPILER /path/to/c/compiler)
-SET(CMAKE_CXX_COMPILER /path/to/cpp/compiler)
-
 echo INFO: ============================================================
 echo INFO: Summary:
 echo INFO: ============================================================
