@@ -232,6 +232,17 @@ static void get_solver(MEX_ARGS) {
   mxFree(solver_file);
 }
 
+// Usage: caffe_('delete_solver', hSolver)
+static void delete_solver(MEX_ARGS) {
+  mxCHECK(nrhs == 1 && mxIsStruct(prhs[0]),
+      "Usage: caffe_('delete_solver', hSolver)");
+  Solver<float>* solver = handle_to_ptr<Solver<float> >(prhs[0]);
+  solvers_.erase(std::remove_if(solvers_.begin(), solvers_.end(),
+      [solver] (const shared_ptr< Solver<float> > &solverPtr) {
+      return solverPtr.get() == solver;
+  }), solvers_.end());
+}
+
 // Usage: caffe_('solver_get_attr', hSolver)
 static void solver_get_attr(MEX_ARGS) {
   mxCHECK(nrhs == 1 && mxIsStruct(prhs[0]),
@@ -314,22 +325,15 @@ static void get_net(MEX_ARGS) {
   mxFree(phase_name);
 }
 
-// Usage: caffe_('net_set_phase', hNet, phase_name)
-static void net_set_phase(MEX_ARGS) {
-  mxCHECK(nrhs == 2 && mxIsStruct(prhs[0]) && mxIsChar(prhs[1]),
-    "Usage: caffe_('net_set_phase', hNet, phase_name)");
+// Usage: caffe_('delete_solver', hSolver)
+static void delete_net(MEX_ARGS) {
+  mxCHECK(nrhs == 1 && mxIsStruct(prhs[0]),
+      "Usage: caffe_('delete_solver', hNet)");
   Net<float>* net = handle_to_ptr<Net<float> >(prhs[0]);
-  char* phase_name = mxArrayToString(prhs[1]);
-  Phase phase;
-  if (strcmp(phase_name, "train") == 0) {
-    phase = TRAIN;
-  } else if (strcmp(phase_name, "test") == 0) {
-    phase = TEST;
-  } else {
-    mxERROR("Unknown phase");
-  }
-  net->SetPhase(phase);
-  mxFree(phase_name);
+  nets_.erase(std::remove_if(nets_.begin(), nets_.end(),
+      [net] (const shared_ptr< Net<float> > &netPtr) {
+      return netPtr.get() == net;
+  }), nets_.end());
 }
 
 // Usage: caffe_('net_get_attr', hNet)
@@ -660,41 +664,37 @@ struct handler_registry {
 
 static handler_registry handlers[] = {
   // Public API functions
-  { "get_solver",                    get_solver                     },
-  { "solver_get_attr",               solver_get_attr                },
-  { "solver_get_iter",               solver_get_iter                },
-  { "solver_get_max_iter",           solver_get_max_iter            },
-  { "solver_restore",                solver_restore                 },
-  { "solver_solve",                  solver_solve                   },
-  { "solver_step",                   solver_step                    },
-  { "get_net",                       get_net                        },
-  { "net_get_attr",                  net_get_attr                   },
-  { "net_set_phase",                 net_set_phase                  },
-  { "net_forward",                   net_forward                    },
-  { "net_backward",                  net_backward                   },
-  { "net_copy_from",                 net_copy_from                  },
-  { "net_share_trained_layers_with", net_share_trained_layers_with  },
-  { "net_reshape",                   net_reshape                    },
-  { "net_save",                      net_save                       },
-  { "layer_get_attr",                layer_get_attr                 },
-  { "layer_get_type",                layer_get_type                 },
-  { "blob_get_shape",                blob_get_shape                 },
-  { "blob_reshape",                  blob_reshape                   },
-  { "blob_get_data",                 blob_get_data                  },
-  { "blob_set_data",                 blob_set_data                  },
-  { "blob_copy_data",                blob_copy_data                 },
-  { "blob_get_diff",                 blob_get_diff                  },
-  { "blob_set_diff",                 blob_set_diff                  },
-  { "set_mode_cpu",                  set_mode_cpu                   },
-  { "set_mode_gpu",                  set_mode_gpu                   },
-  { "set_device",                    set_device                     },
-  { "set_random_seed",               set_random_seed                },
-  { "get_init_key",                  get_init_key                   },
-  { "init_log",                      init_log                       },
-  { "reset",                         reset                          },
-  { "read_mean",                     read_mean                      },
-  { "write_mean",                    write_mean                     },
-  { "version",                       version                        },
+  { "get_solver",         get_solver      },
+  { "delete_solver",      delete_solver   },
+  { "solver_get_attr",    solver_get_attr },
+  { "solver_get_iter",    solver_get_iter },
+  { "solver_restore",     solver_restore  },
+  { "solver_solve",       solver_solve    },
+  { "solver_step",        solver_step     },
+  { "get_net",            get_net         },
+  { "delete_net",         delete_net      },
+  { "net_get_attr",       net_get_attr    },
+  { "net_forward",        net_forward     },
+  { "net_backward",       net_backward    },
+  { "net_copy_from",      net_copy_from   },
+  { "net_reshape",        net_reshape     },
+  { "net_save",           net_save        },
+  { "layer_get_attr",     layer_get_attr  },
+  { "layer_get_type",     layer_get_type  },
+  { "blob_get_shape",     blob_get_shape  },
+  { "blob_reshape",       blob_reshape    },
+  { "blob_get_data",      blob_get_data   },
+  { "blob_set_data",      blob_set_data   },
+  { "blob_get_diff",      blob_get_diff   },
+  { "blob_set_diff",      blob_set_diff   },
+  { "set_mode_cpu",       set_mode_cpu    },
+  { "set_mode_gpu",       set_mode_gpu    },
+  { "set_device",         set_device      },
+  { "get_init_key",       get_init_key    },
+  { "reset",              reset           },
+  { "read_mean",          read_mean       },
+  { "write_mean",         write_mean      },
+  { "version",            version         },
   // The end.
   { "END",                           NULL                           },
 };

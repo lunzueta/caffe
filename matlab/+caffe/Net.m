@@ -87,6 +87,9 @@ classdef Net < handle
       CHECK(is_valid_handle(net.hNet_net), 'invalid Net handle');
       caffe_('net_share_trained_layers_with', self.hNet_net, net.hNet_net);
     end
+    function delete (self)
+      caffe_('delete_net', self.hNet_self);
+    end
     function layer = layers(self, layer_name)
       CHECK(ischar(layer_name), 'layer_name must be a string');
       layer = self.layer_vec(self.name2layer_index(layer_name));
