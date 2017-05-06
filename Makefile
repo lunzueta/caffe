@@ -24,6 +24,8 @@ else
 	OTHER_BUILD_DIR := $(DEBUG_BUILD_DIR)
 endif
 
+THIRDPARTY_DIR := ./3rdparty
+
 # All of the directories containing code.
 SRC_DIRS := $(shell find * -type d -exec bash -c "find {} -maxdepth 1 \
 	\( -name '*.cpp' -o -name '*.proto' \) | grep -q ." \; -print)
@@ -171,7 +173,7 @@ ifneq ("$(wildcard $(CUDA_DIR)/lib64)","")
 endif
 CUDA_LIB_DIR += $(CUDA_DIR)/lib
 
-INCLUDE_DIRS += $(BUILD_INCLUDE_DIR) ./src ./include
+INCLUDE_DIRS += $(BUILD_INCLUDE_DIR) ./src ./include ./include $(THIRDPARTY_DIR)
 ifneq ($(CPU_ONLY), 1)
 	INCLUDE_DIRS += $(CUDA_INCLUDE_DIR)
 	LIBRARY_DIRS += $(CUDA_LIB_DIR)
