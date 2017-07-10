@@ -112,3 +112,5 @@ MANIFEST-*
 *.opensdf
 *.pdb
 *.props
+msvc12x64/
+msvc14x64/
