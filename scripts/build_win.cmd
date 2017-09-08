@@ -69,9 +69,9 @@ if DEFINED APPVEYOR (
 ) else (
     :: Change the settings here to match your setup
     :: Change MSVC_VERSION to 12 to use VS 2013
-    if NOT DEFINED MSVC_VERSION set MSVC_VERSION=12
+    if NOT DEFINED MSVC_VERSION set MSVC_VERSION=14
     :: Change to 1 to use Ninja generator (builds much faster)
-    if NOT DEFINED WITH_NINJA set WITH_NINJA=1
+    if NOT DEFINED WITH_NINJA set WITH_NINJA=0
     :: Change to 1 to build caffe without CUDA support
     if NOT DEFINED CPU_ONLY set CPU_ONLY=0
     :: Change to generate CUDA code for one of the following GPU architectures
